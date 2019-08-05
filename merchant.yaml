@@ -1,0 +1,358 @@
+openapi: "3.0.1"
+info:
+  title: Velox Merchant API
+  version: 2.0.0
+  description: |
+    Package updates (`PUT` methods) are available until package is not arrived at Velox Hub.
+
+paths:
+  /auth:
+    post:
+      description: Creates auth token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ['username', 'password']
+              properties:
+                username:
+                  example: "Acme"
+                  type: string
+                password:
+                  example: "dq3yCS6jzk9L"
+                  type: string
+      responses:
+        '201':
+          description: Auth token is successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "50e84417577bf3073e7abeaaf7eb926eca419837"
+        '400':
+          description: Bad request or invalid auth parameters
+  /ua/npi/packages:
+    post:
+      description: Create a package for NPI last mile (Ukraine)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UANPIPackage'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageSuccessfullyCreatedResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /ua/npi/packages/{package_id}:
+    put:
+      description: Update a package.
+      parameters:
+        - name: package_id
+          in: path
+          description: Package ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UANPIPackage'
+      responses:
+        '200':
+          description: 'Updated successfully'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /ru/bxb/packages:
+    post:
+      description: Create a package for Boxberry last mile (Russia)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RUBXBPackage'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PackageSuccessfullyCreatedResponse'
+  /ru/bxb/packages/{package_id}:
+    put:
+      description: Update a package.
+      parameters:
+        - name: package_id
+          in: path
+          description: Package ID
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RUBXBPackage'
+      responses:
+        '200':
+          description: 'Updated successfully'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Bad request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  description: an error description
+                  type: string
+                  example: "package dimensions are required"
+    Unauthorized:
+      description: A token is not provided or is invalid.
+    Forbidden:
+      description: User is forbidden.
+    NotFound:
+      description: Cant find the resource.
+  schemas:
+    PackageSuccessfullyCreatedResponse:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            id:
+              type: string
+              format: "uuid"
+              example: "d20b9abe-d37e-4e35-a00e-71ccc61dc7b3"
+    UANPIPackage:
+      type: object
+      properties:
+        tracking_number:
+          type: string
+          example: "420079369400109699938581500000"
+          minLength: 6
+          maxLength: 150
+        consignee:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: "John"
+              maxLength: 255
+            last_name:
+              type: string
+              example: "Doe"
+              maxLength: 255
+            phone:
+              type: string
+              maxLength: 20
+              example: "+380 44 123-45-67"
+            email:
+              type: string
+              format: email
+              example: "JohnDoe@kiev.ua"
+        to_door:
+          type: object
+          properties:
+            zip:
+              type: string
+              example: "03134"
+            cityTown:
+              type: string
+              example: "Kiev"
+            addressLine:
+              type: string
+              example: "Gagarina st., 1"
+        to_pickup_point:
+          type: string
+          description: NPI pickup point ID
+          example: "17"
+        content:
+          type: object
+          properties:
+            total_price_usd:
+              type: string
+              example: "7.99"
+              pattern: '^\d\.\d{2}'
+            items:
+              type: array
+              minimum: 1
+              items:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    example: "Popular book about interesting things"
+                    maxLength: 1000
+                    minLength: 2
+                  quantity:
+                    type: integer
+                    example: 1
+                    minimum: 1
+                  price_usd:
+                    description: "Price for one unit of goods"
+                    type: string
+                    example: "7.99"
+                    pattern: '^\d\.\d{2}'
+    RUBXBPackage:
+      type: object
+      properties:
+        tracking_number:
+          type: string
+          example: "420079369400109699938581500000"
+          minLength: 6
+          maxLength: 150
+        consignee:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: "Ivan"
+              maxLength: 255
+            last_name:
+              type: string
+              example: "Ivanov"
+              maxLength: 255
+            phone:
+              type: string
+              maxLength: 20
+              example: "+7 999 888 1234"
+            email:
+              type: string
+              format: email
+              example: "IvanIvanov@moscow.ru"
+        documents:
+          type: object
+          properties:
+            passport:
+              type: object
+              description: "Cyrilic letters are required"
+              properties:
+                first_name:
+                  type: string
+                  example: "Иван"
+                  minLength: 1
+                  maxLength: 100
+                patronymic:
+                  type: string
+                  example: "Иванович"
+                  minLength: 1
+                  maxLength: 100
+                last_name:
+                  type: string
+                  example: "Иванов"
+                  minLength: 1
+                  maxLength: 100
+                series:
+                  type: string
+                  pattern: '^\d{4}$'
+                  description: "Passport series"
+                  example: "0810"
+                  minLength: 4
+                  maxLength: 4
+                number:
+                  type: string
+                  pattern: '^\d{6}$'
+                  description: "Passport number"
+                  example: "123456"
+                  minLength: 6
+                  maxLength: 6
+                issued_date:
+                  type: string
+                  format: date
+                  example: "2017-07-21"
+                issued_by:
+                  type: string
+                  minLength: 10
+                  maxLength: 1000
+            itn:
+              type: string
+              format: number
+              description: "Individual taxpayer number"
+              example: "123456789012"
+              minLength: 10
+              maxLength: 12
+        to_pickup_point:
+          type: string
+          description: Boxberry pickup point ID
+          example: "17"
+        to_door:
+          type: object
+          properties:
+            zip:
+              type: string
+              pattern: '^\d{6}$'
+              example: "123456"
+            city:
+              type: string
+              description: "Cyrilic letters are required"
+              example: "Москва"
+            address:
+              type: string
+              description: "Cyrilic letters are required"
+              example: "Открытое шоссе, 2, 10, 14"
+        content:
+          type: object
+          properties:
+            total_price_usd:
+              type: string
+              example: "7.99"
+              pattern: '^\d\.\d{2}'
+            items:
+              type: array
+              minimum: 1
+              items:
+                type: object
+                properties:
+                  description:
+                    type: string
+                    description: English letters only
+                    example: "Popular book about interesting things"
+                    maxLength: 1000
+                    minLength: 2
+                  quantity:
+                    type: integer
+                    example: 1
+                    minimum: 1
+                  price_usd:
+                    description: "Price for one unit of goods"
+                    type: string
+                    example: "7.99"
+                    pattern: '^\d\.\d{2}'
+                  link:
+                    example: "https://acme.com/populra-book-about-interesting-things"
+                    type: string
+                    format: url
+                  gross_weight_g:
+                    description: |
+                      Gross weight in grammes of one product. If there are 2 books `350` grammes each `gross_weight_g` will be `350`"
+                    example: 350
+                    type: integer
+                  vendor_code:
+                    description: "Unique code that refers to the particular stock keeping unit"
+                    type: string
+                    maxLength: 50
+                    minLength: 1
+                    example: "7eb926eca"
