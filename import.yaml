@@ -1,0 +1,369 @@
+openapi: "3.0.2"
+info:
+  description: |
+    Only english letters are allowed as values in `string` fields.
+
+  title: Velox Import API
+  version: 0.9.0
+
+paths:
+  /packages:
+    post:
+      description: |
+        Create a package and register it in USPS
+
+        HAWB
+        ====
+
+        We will reference the shipment internally using the last 11 digits in your HAWB, ignoring any letters. Data sent back to you will use your full HAWB.
+
+        US CBP requires that the HAWB be unique among all the shipments on the same MAWB. Because of the conversion we do on your full HAWB this means that the last 11 digits of your HAWB have to be unique among shipments on the current MAWB. For example:
+
+        | Your full HAWB      | HAWB sent to US CBP  | Result             |
+        |---------------------|----------------------|-------------------:|
+        | 543210987654321     |  10987654321          |  **OK**            |
+        | 54321098765432ABCD1 |  10987654321          |  **HAWB REJECTED** |
+
+        This would be an error. Even though the 2 full HAWBs are different, they are the same when converted to the values which are sent to US CBP.
+
+      security:
+        - jwtAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ['ship_to', 'dimensions', 'customs']
+              properties:
+                ship_to:
+                  type: object
+                  required: ['person_name', 'phone', 'street', 'city', 'state', 'zip']
+                  properties:
+                    person_name:
+                      type: string
+                      example: "Alejandro Lagos"
+                      maxLength: 35
+                    company_name:
+                      type: string
+                      example: "Amazon"
+                      maxLength: 35
+                    phone:
+                      type: string
+                      maxLength: 20
+                      pattern: '^\d+$'
+                      example: "5045555555"
+                    street:
+                      type: string
+                      maxLength: 70
+                      example: "2615 N CAUSEWAY BLVD E110"
+                    city:
+                      type: string
+                      maxLength: 35
+                      example: "MANDEVILLE"
+                    state:
+                      type: string
+                      example: "LA"
+                      minLength: 2
+                      maxLength: 2
+                    zip:
+                      description: "Both the five-digit (left zero padded if less than five digits) and nine-digit (called ZIP+4) formats are allowed."
+                      type: string
+                      pattern: "[0-9]{5}|[0-9]{5}-[0-9]{4}"
+                      minLength: 5
+                      maxLength: 10
+                      example: "70471-6438"
+                dimensions:
+                  type: object
+                  description: |
+                    For all packages configure length as the longest dimension, followed by height, followed by width.
+                    A package cannot exceed 2743.2 mm of (length + 2 * (width + height)).
+                  required: ['weight_g', 'length_mm', 'width_mm', 'height_mm']
+                  properties:
+                    weight_g:
+                      type: number
+                      format: integer
+                      minimum: 1
+                      example: 370
+                    length_mm:
+                      type: number
+                      format: integer
+                      minimum: 1
+                      example: 15
+                    width_mm:
+                      type: number
+                      format: integer
+                      minimum: 1
+                      example: 30
+                    height_mm:
+                      type: number
+                      format: integer
+                      minimum: 1
+                      example: 40
+                customs:
+                  type: object
+                  required: ['hawb', 'documents', 'declared_value_usd', 'description', 'packaging', 'shipper']
+                  properties:
+                    hawb:
+                      description: "Last 11 digits (letters are ignored) must be unique among all shipments. See the HAWB for more information. At least 6 digits must be in a HAWB."
+                      type: string
+                      pattern: "^[A-Z0-9]{6,40}$"
+                      minLength: 6
+                      maxLength: 40
+                      example: "54321098765432ABC1"
+                    documents:
+                      type: boolean
+                      example: false
+                    declared_value_usd:
+                      description: "0 for documents"
+                      type: number
+                      format: integer
+                      minimum: 0
+                      maximum: 799
+                      example: 500
+                    description:
+                      type: string
+                      minLength: 2
+                      maxLength: 200
+                      example: "Dead Souls 2"
+                    packaging:
+                      type: string
+                      maxLength: 1
+                      enum:
+                        - "L" # Letter
+                        - "P" # IBC Pak
+                        - "B" # Box
+                        - "O" # Other
+                      example: "P"
+                    shipper:
+                      type: object
+                      required: ['name', 'street', 'city', 'zip', 'country', 'phone']
+                      properties:
+                        name:
+                          type: string
+                          maxLength: 30
+                          example: "Nikolai Gogol"
+                        street:
+                          type: string
+                          maxLength: 50
+                          example: "Marko Vovchok St, h. 18A"
+                        city:
+                          type: string
+                          maxLength: 25
+                          example: "Velyki Sorochyntsi"
+                        zip:
+                          type: string
+                          pattern: "^[0-9]{,10}$"
+                          maxLength: 10
+                          example: "4074"
+                        country:
+                          type: string
+                          example: "UA"
+                          enum: ["UA"]
+                        phone:
+                          type: string
+                          pattern: '^\d{,15}$'
+                          maxLength: 15
+                          example: "381000000000"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      tracking_number:
+                        type: string
+                        example: "1Z932R800394891329"
+                      label:
+                        description: base64encoded PDF
+                        type: string
+                      closest_airport_to_destination_state_iata_code:
+                        description: Closest airport to the destination state.
+                        type: string
+                        enum:
+                          - "JFK"
+                          - "ORD"
+                          - "LAX"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /tracking/{tracking_number}:
+    parameters:
+      - name: tracking_number
+        in: path
+        required: true
+        schema:
+          type: string
+          example: "1Z932R800394891329"
+    get:
+      description: Returns package tracking history
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Tracking history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      current_status:
+                        type: string
+                        maxLength: 100
+                        example: "In Transit"
+                        enum:
+                          - "In Transit"
+                          - "Delivered"
+                          - "Manifest"
+                          - "Pallet arrived at customs"
+                          - "Pallet left customs"
+                      events:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            event_date:
+                              type: string
+                              format: datetime
+                              example: "2002-10-02 10:00:00"
+                            location:
+                              type: string
+                              example: "Orlando, FL, US"
+                            description:
+                              type: string
+                              maxLength: 1000
+                              example: "Your item was delivered at 12:52 pm on June 13, 2019 in EAST HANOVER, NJ 07936."
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /manifests:
+    post:
+      description: |
+        Creates a manifest
+
+        Validating MAWBs
+        ================
+
+        The IATA and US Customs rules for IATA MAWB's require that all MAWB's have a three digit Airline prefix and then eight digits. Those eight digits are a seven digit serial number and a mod 7 (unweighted) check digit.
+
+        Using the MAWB 180-62148741 as the example, the airline prefix is 180, the seven digit serial number is 6214874, and the check digit is a 1.
+
+        To confirm that 1 is the correct mod 7 check digit, you can determine the check digit two different ways. Method one:
+
+        1. Divide the seven digit serial number by `7`
+                   `6214874 / 7 = 887839.1428...`
+        2. multiply first number after decimal by `7`
+                    `.1 x 7 = 0.7`
+        3. round the result up, to determine the check digit
+                    `0.7` rounds up to `1`
+                    the check digit is `1` (if the result were a whole
+                      number, then no rounding is required)
+
+          and method two:
+
+        1. Divide the non-check digits by `7`
+                   `6214874 / 7 = 887839.1428...`
+        2. multiply the integer result by `7`
+                    `887839 x 7 = 6214873`
+        3. The difference between the number you started with and the result
+           of step 2 is the check digit:
+                   `6214874 - 6214873 = 1`
+                    the check digit is `1`
+        These calculations confirm that `62148741` is a valid MAWB suffix, and as long as the `180-` prefix is the correct airline prefix, you know you have a valid MAWB.
+      security:
+        - jwtAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: ['code', 'departure_date', 'origin_iata_airport_code', 'destination_iata_airport_code', 'flight_number', 'mawb', 'tracking_numbers']
+              properties:
+                code:
+                  description: "Use this field to uniquely identify this manifest"
+                  type: string
+                  minLength: 3
+                  maxLength: 15
+                  example: "US2019011303"
+                departure_date:
+                  description: "The date in RFC3339 that the flight LEAVES the origin country; it can't be older than 7 days ago or newer than 4 days from now"
+                  type: string
+                  format: datetime
+                  example: "2002-10-02T10:00:00-05:00"
+                origin_airport_iata_code:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                  example: "KBP"
+                destination_airport_iata_code:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                  example: "JFK"
+                  enum:
+                    - "JFK"
+                    - "ORD"
+                    - "LAX"
+                flight_number:
+                  description: "The airline and flight number"
+                  type: string
+                  minLength: 3
+                  maxLength: 20
+                  example: "AA1234"
+                mawb:
+                  description: |
+                    This field contains the consolidation's Master Air Waybill number (11 digits). It is required and it must match the MAWB filed by the airline; if this is not the case, US Customs will NOT release your material. Furthermore, airline MAWBs have a mod-7 check digit, and we will reject files where the check-digit is invalid. See the Validating MAWBs for more information.
+                  minLength: 11
+                  maxLength: 11
+                  pattern: "[0-9]{11}"
+                  example: "18062148741"
+                  type: string
+                tracking_numbers:
+                  type: array
+                  items:
+                    description: USPS package tracking number
+                    type: string
+                    example: "1Z932R800394891329"
+      responses:
+        '201':
+          description: Created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequest:
+      description: Bad request.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  description: an error description
+                  type: string
+                  example: "package dimensions are required"
+    Unauthorized:
+      description: A token is not provided or is invalid.
+    Forbidden:
+      description: User is forbidden.
+    NotFound:
+      description: Cant find the resource.
