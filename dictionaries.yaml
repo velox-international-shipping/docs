@@ -1,0 +1,167 @@
+openapi: "3.0.1"
+info:
+  title: Velox Dictionaries
+  version: 1.0.0
+
+paths:
+  /bxb/address/regions:
+    get:
+      tags: 
+      - Boxberry (BXB)
+      description: Returns Russian regions where Boxberry pickup points are presented
+      responses:
+        '200':
+          description: Boxberry regions of pickup points in Russia
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Region ID
+                      type: string
+                      example: "168"
+                    name:
+                      type: string
+                      example: "Leningradskaia obl"
+  /bxb/address/{region_id}/localities:
+    get:
+      tags: 
+      - Boxberry (BXB)
+      description: Returns localities of the regions
+      parameters:
+      - name: region_id
+        in: path
+        description: Region ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Boxberry localities in the region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Locality ID
+                      type: string
+                      example: "Н00078328"
+                    name:
+                      type: string
+                      example: "Volkhov"
+  /bxb/address/{locality_id}/pickup-points:
+    get:
+      tags: 
+      - Boxberry (BXB)
+      description: Returns pickup points of the locality
+      parameters:
+      - name: locality_id
+        in: path
+        description: Locality ID
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Boxberry pickup points in the locality
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Pickup point ID
+                      type: string
+                      example: "ПП-4701-018"
+                    name:
+                      type: string
+                      example: "ПП-4701-018"
+  
+  /npi/address/regions:
+    get:
+      tags: 
+      - Nova poshta (NPI)
+      description: Returns Ukrainian regions where NPI pickup points are presented
+      responses:
+        '200':
+          description: NPI regions of pickup points in Ukraine
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Region ID
+                      type: integer
+                      example: 26
+                    name:
+                      type: string
+                      example: "Dnipropetrovs'ka"
+  /npi/address/{region_id}/localities:
+    get:
+      tags: 
+      - Nova poshta (NPI)
+      description: Returns localities of the region
+      parameters:
+      - name: region_id
+        in: path
+        description: Region ID
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: NPI localities in the region
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Locality ID
+                      type: integer
+                      example: 16
+                    name:
+                      type: string
+                      example: "Dnipro"      
+  /npi/address/{locality_id}/pickup-points:
+    get:
+      tags: 
+      - Nova poshta (NPI)
+      description: Returns pickup points of the locality
+      parameters:
+      - name: locality_id
+        in: path
+        description: Locality ID
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Boxberry pickup points in the locality
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      description: Pickup point ID
+                      type: integer
+                      example: 826
+                    name:
+                      type: string
+                      example: "Depot №70 (do 15 kg), Mini-viddilennja: vul. Robocha, 83"
