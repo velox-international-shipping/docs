@@ -41,22 +41,22 @@ paths:
           description: Invalid ZIP format
         404:
           description: There is no city and state for the provided ZIP code 
-  /tariff-zones-for-state/{state}:
+  /shipping-zones-for-state/{state}:
     parameters:
       - name: state
-        description: State 2-letters abbreviation
+        description: State two-letter abbreviation
         in: path
         required: true
         schema:
           type: string
           example: "CO"
     get:
-      description: Returns tariff zones for supported airports
+      description: Returns shipping zones for supported airports
       security: 
         - jwtAuth: []
       responses:
         200:
-          description: Tariff zones.
+          description: Shipping zones.
           content:
             application/json:
               schema:
@@ -76,7 +76,7 @@ paths:
                             - "JFK"
                             - "ORD"
                             - "LAX"
-                        tariff_zone:
+                        shipping_zone:
                           type: integer
                           example: 7
         400:
