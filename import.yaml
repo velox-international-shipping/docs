@@ -41,15 +41,15 @@ paths:
           description: Invalid ZIP format
         404:
           description: There is no city and state for the provided ZIP code 
-  /shipping-zones-for-state/{state}:
+  /shipping-zones-by-zip/{zip}:
     parameters:
-      - name: state
-        description: State two-letter abbreviation
+      - name: zip
+        description: Only first 5 digits are used. Both \d{5} and \d{5}-\d{4} are allowed formats.
         in: path
         required: true
         schema:
           type: string
-          example: "CO"
+          example: "81152"
     get:
       description: Returns shipping zones for supported airports
       security: 
