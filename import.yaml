@@ -41,6 +41,46 @@ paths:
           description: Invalid ZIP format
         404:
           description: There is no city and state for the provided ZIP code 
+  /tariff-zones-for-state/{state}:
+    parameters:
+      - name: state
+        description: State abbreviation
+        in: path
+        required: true
+        schema:
+          type: string
+          example: "CO"
+    get:
+      description: Returns tariff zones for supported airports
+      security: 
+        - jwtAuth: []
+      responses:
+        200:
+          description: Tariff zones.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        airport_iata_code:
+                          type: string
+                          minLength: 3
+                          maxLength: 3
+                          example: "JFK"
+                          enum:
+                            - "JFK"
+                            - "ORD"
+                            - "LAX"
+                        tariff_zone:
+                          type: integer
+                          example: 7
+        400:
+          description: State is not supported or invalid
   /packages:
     post:
       description: |
