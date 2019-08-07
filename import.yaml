@@ -7,7 +7,7 @@ info:
   version: 0.9.0
 
 paths:
-  /address/{zip}/city-state-lookup:
+  /city-state-by-zip/{zip}:
     parameters:
       - name: zip
         description: Only first 5 digits are used for looking up. Both \d{5} and \d{5}-\d{4} are allowed formats.
@@ -44,7 +44,7 @@ paths:
   /tariff-zones-for-state/{state}:
     parameters:
       - name: state
-        description: State abbreviation
+        description: State 2-letters abbreviation
         in: path
         required: true
         schema:
