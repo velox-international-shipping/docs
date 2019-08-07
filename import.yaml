@@ -7,6 +7,40 @@ info:
   version: 0.9.0
 
 paths:
+  /address/{zip}/city-state-lookup:
+    parameters:
+      - name: zip
+        description: Only first 5 digits are used for looking up. Both \d{5} and \d{5}-\d{4} are allowed formats.
+        in: path
+        required: true
+        schema:
+          type: string
+          example: "81152"
+    get:
+      description: Returns the city and state corresponding to the given ZIP code.
+      security: 
+        - jwtAuth: []
+      responses:
+        200:
+          description: City and state for provided ZIP code.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      city:
+                        type: string
+                        example: "SAN LUIS"
+                      state:
+                        type: string
+                        example: "CO"
+        400:
+          description: Invalid ZIP format
+        404:
+          description: There is no city and state for the provided ZIP code 
   /packages:
     post:
       description: |
