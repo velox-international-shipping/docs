@@ -80,7 +80,9 @@ paths:
                           type: integer
                           example: 7
         400:
-          description: State is not supported or invalid
+          description: Invalid ZIP format
+        404:
+          description: ZIP code is not supported
   /packages:
     post:
       description: |
