@@ -38,9 +38,7 @@ paths:
                         type: string
                         example: "CO"
         400:
-          description: Invalid ZIP format
-        404:
-          description: There is no city and state for the provided ZIP code 
+          description: Invalid ZIP
   /shipping-zones-by-zip/{zip}:
     parameters:
       - name: zip
@@ -80,9 +78,7 @@ paths:
                           type: integer
                           example: 7
         400:
-          description: Invalid ZIP format
-        404:
-          description: ZIP code is not supported
+          description: Invalid ZIP
   /packages:
     post:
       description: |
