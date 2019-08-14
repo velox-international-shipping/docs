@@ -2,7 +2,6 @@ openapi: "3.0.2"
 info:
   description: |
     Only english letters are allowed as values in `string` fields.
-
   title: Velox Import API
   version: 0.9.0
 
@@ -18,7 +17,7 @@ paths:
           example: "81152"
     get:
       description: Returns the city and state corresponding to the given ZIP code.
-      security: 
+      security:
         - jwtAuth: []
       responses:
         200:
@@ -50,7 +49,7 @@ paths:
           example: "81152"
     get:
       description: Returns shipping zones for supported airports
-      security: 
+      security:
         - jwtAuth: []
       responses:
         200:
@@ -83,21 +82,15 @@ paths:
     post:
       description: |
         Create a package and register it in USPS
-
         HAWB
         ====
-
         We will reference the shipment internally using the last 11 digits in your HAWB, ignoring any letters. Data sent back to you will use your full HAWB.
-
         US CBP requires that the HAWB be unique among all the shipments on the same MAWB. Because of the conversion we do on your full HAWB this means that the last 11 digits of your HAWB have to be unique among shipments on the current MAWB. For example:
-
         | Your full HAWB      | HAWB sent to US CBP  | Result             |
         |---------------------|----------------------|-------------------:|
         | 543210987654321     |  10987654321          |  **OK**            |
         | 54321098765432ABCD1 |  10987654321          |  **HAWB REJECTED** |
-
         This would be an error. Even though the 2 full HAWBs are different, they are the same when converted to the values which are sent to US CBP.
-
       security:
         - jwtAuth: []
       requestBody:
@@ -265,6 +258,36 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
 
+  /packages/{tracking_number}/label:
+    parameters:
+      - name: tracking_number
+        in: path
+        required: true
+        schema:
+          type: string
+          example: "1Z932R800394891329"
+    get:
+      description: Returns package label. Available for a month after label creation.
+      security:
+        - jwtAuth: []
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: object
+                    properties:
+                      label:
+                        description: base64encoded PDF
+                        type: string
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '410':
+          description: Gone. Label is expired and was removed.
   /tracking/{tracking_number}:
     parameters:
       - name: tracking_number
@@ -321,16 +344,11 @@ paths:
     post:
       description: |
         Creates a manifest
-
         Validating MAWBs
         ================
-
         The IATA and US Customs rules for IATA MAWB's require that all MAWB's have a three digit Airline prefix and then eight digits. Those eight digits are a seven digit serial number and a mod 7 (unweighted) check digit.
-
         Using the MAWB 180-62148741 as the example, the airline prefix is 180, the seven digit serial number is 6214874, and the check digit is a 1.
-
         To confirm that 1 is the correct mod 7 check digit, you can determine the check digit two different ways. Method one:
-
         1. Divide the seven digit serial number by `7`
                    `6214874 / 7 = 887839.1428...`
         2. multiply first number after decimal by `7`
@@ -339,9 +357,7 @@ paths:
                     `0.7` rounds up to `1`
                     the check digit is `1` (if the result were a whole
                       number, then no rounding is required)
-
           and method two:
-
         1. Divide the non-check digits by `7`
                    `6214874 / 7 = 887839.1428...`
         2. multiply the integer result by `7`
