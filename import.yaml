@@ -79,6 +79,18 @@ paths:
         400:
           description: Invalid ZIP
   /packages:
+    parameters:
+      - name: exclude
+        description: |
+          Exclude fields from the response. Allowed fields to exclude: `label`.
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+        style: form
+        explode: false
     post:
       description: |
         Create a package and register it in USPS
@@ -266,6 +278,16 @@ paths:
         schema:
           type: string
           example: "1Z932R800394891329"
+      - name: format
+        description: Specifies the response format.
+        in: query
+        required: false
+        schema:
+          type: string
+          example: "binary"
+          enum:
+            - binary
+            - json
     get:
       description: Returns package label. Available for a month after label creation.
       security:
@@ -284,6 +306,10 @@ paths:
                       label:
                         description: base64encoded PDF
                         type: string
+            application/pdf:
+              schema:
+                type: string
+                format: binary
         '404':
           $ref: '#/components/responses/NotFound'
         '410':
