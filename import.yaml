@@ -279,7 +279,7 @@ paths:
           type: string
           example: "1Z932R800394891329"
       - name: format
-        description: Specifies the response format.
+        description: Specifies the response format. `json` is the default format.
         in: query
         required: false
         schema:
@@ -308,6 +308,8 @@ paths:
                         type: string
             application/pdf:
               schema:
+                description: |
+                  Binary representation of a PDF file. Response contains `Content-Disposition: attachment; filename="{track_number}.pdf"` header.
                 type: string
                 format: binary
         '404':
