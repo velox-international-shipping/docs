@@ -571,10 +571,11 @@ paths:
                           - ReadyForPickup
                           - ReturnToSender
 
-                          - PalletArrivedAtCustoms # extra statuses merged by Velox
-                          - PalletInProcessAtCustoms
-                          - PalletLeftCustoms
-                          - PalletHoldAtCustoms
+                          - VeloxPalletArrivedAtCustoms # extra statuses merged by Velox
+                          - VeloxPalletArrivedAtAirport
+                          - VeloxPalletInProcessAtCustoms
+                          - VeloxPalletLeftCustoms
+                          - VeloxPalletHoldAtCustoms
                       weight_g:
                         description: As measured by carrier.
                         type: number
@@ -614,10 +615,11 @@ paths:
                                 - ReadyForPickup
                                 - ReturnToSender
 
-                                - PalletArrivedAtCustoms # extra statuses merged by Velox
-                                - PalletInProcessAtCustoms
-                                - PalletLeftCustoms
-                                - PalletHoldAtCustoms
+                                - VeloxPalletArrivedAtCustoms # extra statuses merged by Velox
+                                - VeloxPalletArrivedAtAirport
+                                - VeloxPalletInProcessAtCustoms
+                                - VeloxPalletLeftCustoms
+                                - VeloxPalletHoldAtCustoms
 
         '404':
           $ref: '#/components/responses/NotFound'
