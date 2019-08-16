@@ -598,7 +598,7 @@ paths:
                               type: string
                               maxLength: 1000
                               example: "delivered"
-                            current_status:
+                            status:
                               description: Package status at the time of a scan
                               type: string
                               maxLength: 100
