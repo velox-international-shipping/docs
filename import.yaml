@@ -82,7 +82,7 @@ paths:
     parameters:
       - name: exclude
         description: |
-          Exclude fields from the response. Allowed fields to exclude: `label`.
+          Exclude fields from the response. Allowed fields to exclude: `label` (to reduce net traffic if label is not needed right now).
         in: query
         required: false
         schema:
@@ -316,6 +316,7 @@ paths:
           $ref: '#/components/responses/NotFound'
         '410':
           description: Gone. Label is expired and was removed.
+
   /tracking/{tracking_number}:
     parameters:
       - name: tracking_number
@@ -327,10 +328,12 @@ paths:
     get:
       description: |
         Returns package tracking history
-        
+
         There might be more values of the `description` fields in the future. Those tracking fields are managed by the carrier company.
-        
-        Possible descriptions are:
+
+        WARNING: event descriptions may vary.
+
+        Possible event descriptions are:
           - 2nd notice generated
           - acceptance at destination
           - acceptance exception
@@ -567,11 +570,13 @@ paths:
                           - OutForDelivery
                           - ReadyForPickup
                           - ReturnToSender
-                          
-                          - PalletArrivedAtCustoms # extra statuses merged by Velox 
+
+                          - PalletArrivedAtCustoms # extra statuses merged by Velox
+                          - PalletInProcessAtCustoms
                           - PalletLeftCustoms
+                          - PalletHoldAtCustoms
                       weight_g:
-                        description: The weight will appear on carrier measurement
+                        description: As measured by carrier.
                         type: number
                         format: integer
                         minimum: 1
@@ -608,10 +613,12 @@ paths:
                                 - OutForDelivery
                                 - ReadyForPickup
                                 - ReturnToSender
-                                
-                                - PalletArrivedAtCustoms # extra statuses merged by Velox 
+
+                                - PalletArrivedAtCustoms # extra statuses merged by Velox
+                                - PalletInProcessAtCustoms
                                 - PalletLeftCustoms
-                            
+                                - PalletHoldAtCustoms
+
         '404':
           $ref: '#/components/responses/NotFound'
 
