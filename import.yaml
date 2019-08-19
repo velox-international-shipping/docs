@@ -326,222 +326,7 @@ paths:
           type: string
           example: "1Z932R800394891329"
     get:
-      description: |
-        Returns package tracking history
-
-        There might be more values of the `description` fields in the future. Those tracking fields are managed by the carrier company.
-
-        WARNING: event descriptions may vary.
-
-        Possible event descriptions are:
-          - 2nd notice generated
-          - acceptance at destination
-          - acceptance exception
-          - accepted by origin carrier
-          - accept or pickup
-          - addressee unknown
-          - address encoding
-          - alert mid user needs to be registered
-          - alert mid user not registered to efn mid
-          - alert mid user used by another mid owner
-          - alert unauthorized mid use
-          - arrival at transit office from exchange
-          - arrival at unit
-          - arrived abroad
-          - arrived agent facility
-          - arrived in destination country
-          - arrived shipping partner facility
-          - arrive usps sort facility
-          - at foreign delivery unit
-          - attempted delivery abroad
-          - authorized agent1
-          - available for pickup
-          - awaiting consignee collection
-          - bad address
-          - bulk enroute acceptance
-          - bumped delay
-          - business closed
-          - carrier pick-up scheduled
-          - claim denied
-          - claim initiated
-          - claim paid
-          - clearance delay
-          - closed on arrival
-          - closeout
-          - contact us customs
-          - container close
-          - container load
-          - container unload
-          - customer moved
-          - dc/evs arrive
-          - dc/evs arrive verification acceptance
-          - delivered
-          - delivered abroad
-          - delivered by agent to merchant
-          - delivered by broker
-          - delivered damaged
-          - delivered to postal agent
-          - delivered to recipient by agent
-          - delivered (with signature)
-          - delivery instructions provided
-          - delivery status not updated
-          - depart agent facility
-          - departed
-          - departed shipping partner facility
-          - depart from transit office of exchange
-          - depart usps sort facility
-          - dispatch
-          - dispatched from sort facility
-          - dispatched to sort facility
-          - dispatch form discrepancy
-          - disposal
-          - distribution
-          - distribution complete
-          - duplicate label id
-          - electronic info
-          - enroute arrival
-          - enroute arrival
-          - enroute departure
-          - enroute exception
-          - entered at plant
-          - epg origin post is preparing shipment
-          - final disposition by agent
-          - foreign acceptance
-          - foreign arrival at outward office
-          - foreign international dispatch
-          - foreign return to sender
-          - forwarded
-          - forwarded by usps
-          - forward expired
-          - forwarding to us customs
-          - handoff to intermediate carrier
-          - hazardous/unsafe delivery conditions
-          - held at inward office of exchange (foreign event)
-          - held by import customs (foreign event)
-          - held for payment
-          - holiday delay
-          - import cancellation (foreign event)
-          - inbound international arrival
-          - inbound into customs
-          - inbound out of customs
-          - inbound precon (planned only)
-          - incorrect_address
-          - insufficient address
-          - intercepted
-          - intermediate transfer airport
-          - international delivered with signature
-          - international dispatch ready
-          - into customs
-          - into foreign customs
-          - in transit to next facility
-          - inventory
-          - item arrival at collection point for pickup (foreign event)
-          - item departed from destination office of exchange (foreign event)
-          - item held at delivery depot (foreign event)
-          - item into sorting center (foreign event)
-          - item out for delivery (foreign event
-          - item out of sorting center (foreign event)
-          - left no address
-          - listed on registered mail dispatch bill
-          - loop mail exception
-          - mail piece nested to container, no event
-          - miscode
-          - missed delivery cycle
-          - missent
-          - missent - zip changed - pmpc scan
-          - missent - zip not changed - pmpc scan
-          - mis-shipped
-          - missort
-          - moved, left no address
-          - no authorized recipient available
-          - no secure location available
-          - no such number
-          - not delivered
-          - not home
-          - notice left
-          - not received by agent
-          - onforwarded to third party
-          - on hold
-          - on route
-          - on service
-          - origin acceptance
-          - origin carrier departed/uplift
-          - origin post is preparing shipment
-          - other
-          - outbound - into us customs
-          - outbound - out of us customs
-          - outbound precon (planned only)
-          - outbound predes (planned only)
-          - outbound resdes (planned only)
-          - outbound resdit (planned only)
-          - out for delivery
-          - out of customs
-          - out of foreign customs
-          - package intercept requested
-          - package research case closed
-          - package research case created
-          - package return notice generated
-          - partial delivery
-          - picked up
-          - picked up and processed by agent
-          - picked up at customs unit
-          - picked up by agent
-          - picked up by shipping partner
-          - placard assign
-          - prepared for agent3
-          - processed
-          - processed at destination facility
-          - processed at origin
-          - processed through usps sort facility
-          - prohibited
-          - random sampling
-          - ready to process
-          - receipt into customs/bond
-          - received at opening unit
-          - received by agent
-          - received from intermediate carrier
-          - receptacle blocked
-          - receptacle full/item oversized
-          - recipient notified by agent
-          - redelivery scheduled
-          - refused
-          - registered mail dispatch signature
-          - registered mail dispatch witness
-          - release from customs/bond
-          - restricted
-          - return to sender
-          - r.t.s: abandonment
-          - r.t.s: duty nonpayment
-          - r.t.s: improper documentation
-          - seized by law enforcement
-          - service change
-          - shipment acceptance
-          - shipment pick up
-          - shipment stopped
-          - sorting/processing complete
-          - tendered to agent for final delivery
-          - tendered to military agent
-          - tendered to postal service
-          - tracking inquiry
-          - trailer arrive
-          - trailer depart
-          - transfer from vault
-          - transferred through service center
-          - transfer to employee
-          - transfer to vault
-          - transit
-          - transit mail arrival
-          - transit mail dispatch
-          - unclaimed
-          - undeliverable to recipent by agent
-          - unmanifested acceptance
-          - usps hand off to shipping partner
-          - vacant
-          - vault turnover
-          - visible damage
-          - weather delay
-          - with courier
-          - with delivery courier
+      description: Returns package tracking history
       security:
         - jwtAuth: []
       responses:
@@ -556,28 +341,8 @@ paths:
                     type: object
                     required: ['current_status', 'events']
                     properties:
-                      current_status:
-                        type: string
-                        maxLength: 100
-                        example: "InTransit"
-                        enum:
-                          - Acceptance
-                          - Delivered
-                          - DeliveryAttempt
-                          - Exception
-                          - InTransit
-                          - Manifest
-                          - OutForDelivery
-                          - ReadyForPickup
-                          - ReturnToSender
-
-                          - VeloxPalletArrivedAtCustoms # extra statuses merged by Velox
-                          - VeloxPalletArrivedAtAirport
-                          - VeloxPalletInProcessAtCustoms
-                          - VeloxPalletLeftCustoms
-                          - VeloxPalletHoldAtCustoms
                       weight_g:
-                        description: As measured by carrier.
+                        description: Measured by the carrier.
                         type: number
                         format: integer
                         minimum: 1
@@ -594,33 +359,35 @@ paths:
                               example: "2002-10-02 10:00:00"
                             location:
                               type: string
-                              example: "Orlando, FL, US"
+                              example: "712019998, MONROE, LA, BREARD CARR-DELV"
                             description:
                               type: string
                               maxLength: 1000
                               example: "delivered"
-                            status:
-                              description: Package status at the time of a scan
-                              type: string
-                              maxLength: 100
-                              example: "InTransit"
-                              enum:
-                                - Acceptance
-                                - Delivered
-                                - DeliveryAttempt
-                                - Exception
-                                - InTransit
-                                - Manifest
-                                - OutForDelivery
-                                - ReadyForPickup
-                                - ReturnToSender
-
-                                - VeloxPalletArrivedAtCustoms # extra statuses merged by Velox
-                                - VeloxPalletArrivedAtAirport
-                                - VeloxPalletInProcessAtCustoms
-                                - VeloxPalletLeftCustoms
-                                - VeloxPalletHoldAtCustoms
-
+                              enum: 
+                              - accepted by usps
+                              - arrived at usps delivery unit
+                              - delivered
+                              - delivered to partner facility
+                              - delivery exception
+                              - departed usps
+                              - departing newgistics facility
+                              - electronic information sent to usps
+                              - enroute departed
+                              - forwarded
+                              - notice left
+                              - out for delivery
+                              - picked up by usps
+                              - processed by usps
+                              - refused
+                              - return to sender
+                              - shipped from client
+                              
+                              - pallet arrived at customs # exatra descriptions added by Velox
+                              - pallet arrived at airport
+                              - pallet in process at customs
+                              - pallet left customs
+                              - pallet hold at customs
         '404':
           $ref: '#/components/responses/NotFound'
 
