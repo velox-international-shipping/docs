@@ -94,6 +94,7 @@ paths:
     post:
       description: |
         Create a package and register it in USPS
+        
         HAWB
         ====
         We will reference the shipment internally using the last 11 digits in your HAWB, ignoring any letters. Data sent back to you will use your full HAWB.
@@ -112,6 +113,16 @@ paths:
               type: object
               required: ['ship_to', 'dimensions', 'customs']
               properties:
+                induct_at_airoport_iata_code:
+                  type: string
+                  description: Specifies where the package will be expected and finally inducted
+                  minLength: 3
+                  maxLength: 3
+                  example: "LAX"
+                  enum:
+                    - "JFK"
+                    - "ORD"
+                    - "LAX"
                 ship_to:
                   type: object
                   required: ['person_name', 'phone', 'street', 'city', 'state', 'zip']
@@ -193,10 +204,10 @@ paths:
                     declared_value_usd:
                       description: "0 for documents"
                       type: number
-                      format: integer
-                      minimum: 0
-                      maximum: 799
-                      example: 500
+                      minimum: 0.00
+                      maximum: 799.99
+                      example: 499.99
+                      multipleOf: 0.01
                     description:
                       type: string
                       minLength: 2
@@ -258,13 +269,6 @@ paths:
                       label:
                         description: base64encoded PDF
                         type: string
-                      closest_airport_to_destination_state_iata_code:
-                        description: Closest airport to the destination state.
-                        type: string
-                        enum:
-                          - "JFK"
-                          - "ORD"
-                          - "LAX"
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
