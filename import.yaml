@@ -399,8 +399,10 @@ paths:
     post:
       description: |
         Creates a manifest
+        
         Validating MAWBs
         ================
+        
         The IATA and US Customs rules for IATA MAWB's require that all MAWB's have a three digit Airline prefix and then eight digits. Those eight digits are a seven digit serial number and a mod 7 (unweighted) check digit.
         Using the MAWB 180-62148741 as the example, the airline prefix is 180, the seven digit serial number is 6214874, and the check digit is a 1.
         To confirm that 1 is the correct mod 7 check digit, you can determine the check digit two different ways. Method one:
