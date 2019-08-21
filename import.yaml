@@ -93,6 +93,8 @@ paths:
         explode: false
     post:
       description: |
+        Delivery to Alaska (AK) is not available.
+      
         Create a package and register it in USPS
         
         HAWB
