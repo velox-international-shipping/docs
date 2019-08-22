@@ -113,7 +113,7 @@ paths:
               type: object
               required: ['ship_to', 'dimensions', 'customs']
               properties:
-                induct_at_airoport_iata_code:
+                induct_at_airport_iata_code:
                   type: string
                   description: Specifies where the package will be expected and finally inducted
                   minLength: 3
