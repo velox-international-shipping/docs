@@ -391,7 +391,7 @@ paths:
                               - return to sender
                               - shipped from client
                               
-                              - pallet arrived at customs # exatra descriptions added by Velox
+                              - pallet arrived at customs # extra descriptions added by Velox
                               - pallet arrived at airport
                               - pallet in process at customs
                               - pallet left customs
