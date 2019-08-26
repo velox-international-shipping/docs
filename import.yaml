@@ -16,6 +16,7 @@ paths:
           type: string
           example: "81152"
     get:
+      tags: ['Public']
       description: Returns the city and state corresponding to the given ZIP code.
       security:
         - jwtAuth: []
@@ -50,6 +51,7 @@ paths:
           type: string
           example: "81152"
     get:
+      tags: ['Public']
       description: Returns shipping zones for supported airports
       security:
         - jwtAuth: []
@@ -96,6 +98,7 @@ paths:
         style: form
         explode: false
     post:
+      tags: ['Public']
       description: |
         Create a package and register it in USPS
         
@@ -297,6 +300,7 @@ paths:
             - binary
             - json
     get:
+      tags: ['Public']
       description: Returns package label. Available for a month after label creation.
       security:
         - jwtAuth: []
@@ -334,6 +338,7 @@ paths:
           type: string
           example: "1Z932R800394891329"
     get:
+      tags: ['Public']
       description: Returns package tracking history
       security:
         - jwtAuth: []
@@ -401,6 +406,7 @@ paths:
 
   /manifests:
     post:
+      tags: ['Public']
       description: |
         Creates a manifest
         
