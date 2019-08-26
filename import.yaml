@@ -347,7 +347,7 @@ paths:
                 properties:
                   result:
                     type: object
-                    required: ['current_status', 'events']
+                    required: ['events']
                     properties:
                       weight_g:
                         description: Measured by the carrier.
