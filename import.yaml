@@ -271,6 +271,7 @@ paths:
                     type: object
                     properties:
                       tracking_number:
+                        description: In demo mode backend tier returns UUID
                         type: string
                         example: "1Z932R800394891329"
                       label:
