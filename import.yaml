@@ -348,7 +348,7 @@ paths:
           example: "1Z932R800394891329"
     delete:
       tags: ['Public']
-      description: Voids a package
+      description: Voids a package. Method is not allowed if a package was manifested.
       security:
         - jwtAuth: []
       responses:
