@@ -39,6 +39,8 @@ paths:
                         example: "CO"
         400:
           description: Invalid ZIP format
+        401:
+          $ref: '#/components/responses/Unauthorized'
         404:
           description: ZIP is not found
   /shipping-zones-by-zip/{zip}:
@@ -82,6 +84,8 @@ paths:
                           example: 7
         400:
           description: Invalid ZIP format
+        401:
+          $ref: '#/components/responses/Unauthorized'
         404:
           description: ZIP is not found
   /packages:
@@ -199,7 +203,9 @@ paths:
                   required: ['hawb', 'documents', 'declared_value_usd', 'description', 'packaging', 'shipper']
                   properties:
                     hawb:
-                      description: "Last 11 digits (letters are ignored) must be unique among all shipments. See the HAWB for more information. At least 6 digits must be in a HAWB."
+                      description: |
+                        Last 11 digits (letters are ignored) must be unique among all shipments. See the HAWB for more information. At least 6 digits must be in a HAWB.
+                        HAWB must be unique among all non deleted (see DELETE /packages/{tracking_number} method) packages
                       type: string
                       pattern: "^[A-Z0-9]{6,40}$"
                       minLength: 6
@@ -260,7 +266,7 @@ paths:
                           maxLength: 15
                           example: "381000000000"
       responses:
-        '201':
+        201:
           description: Created
           content:
             application/json:
@@ -277,9 +283,9 @@ paths:
                       label:
                         description: base64encoded PDF
                         type: string
-        '400':
+        400:
           $ref: '#/components/responses/BadRequest'
-        '401':
+        401:
           $ref: '#/components/responses/Unauthorized'
 
   /packages/{tracking_number}/label:
@@ -306,7 +312,7 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '200':
+        200:
           description: Ok
           content:
             application/json:
@@ -325,11 +331,34 @@ paths:
                   Binary representation of a PDF file. Response contains `Content-Disposition: attachment; filename="{track_number}.pdf"` header.
                 type: string
                 format: binary
-        '404':
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
           $ref: '#/components/responses/NotFound'
-        '410':
+        410:
           description: Gone. Label is expired and was removed.
 
+  /packages/{tracking_number}:
+    parameters:
+      - name: tracking_number
+        in: path
+        required: true
+        schema:
+          type: string
+          example: "1Z932R800394891329"
+    delete:
+      tags: ['Public']
+      description: Voids a package
+      security:
+        - jwtAuth: []
+      responses:
+        200:
+          description: The package is voided
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'  
+          
   /tracking/{tracking_number}:
     parameters:
       - name: tracking_number
@@ -344,7 +373,7 @@ paths:
       security:
         - jwtAuth: []
       responses:
-        '200':
+        200:
           description: Tracking history
           content:
             application/json:
@@ -402,7 +431,9 @@ paths:
                               - pallet in process at customs
                               - pallet left customs
                               - pallet held at customs
-        '404':
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
           $ref: '#/components/responses/NotFound'
 
   /manifests:
@@ -490,7 +521,7 @@ paths:
                     type: string
                     example: "1Z932R800394891329"
       responses:
-        '201':
+        201:
           description: Created
           content:
             application/json:
@@ -504,9 +535,9 @@ paths:
                         description: Created manifest ID
                         type: string
                         format: uuid
-        '400':
+        400:
           $ref: '#/components/responses/BadRequest'
-        '401':
+        401:
           $ref: '#/components/responses/Unauthorized'
 
 components:
