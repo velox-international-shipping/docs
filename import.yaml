@@ -215,7 +215,7 @@ paths:
                       type: boolean
                       example: false
                     declared_value_usd:
-                      description: "0 for documents"
+                      description: "0 for documents only, positive in other case"
                       type: number
                       minimum: 0.00
                       maximum: 799.99
@@ -277,10 +277,9 @@ paths:
                     type: object
                     properties:
                       tracking_number:
-                        description: In demo mode returns UUID
+                        description: In demo mode backend tier returns UUID
                         type: string
-                        pattern: '^\d{34}$'
-                        example: "4207047192748927005373000000007557"
+                        example: "1Z932R800394891329"
                       label:
                         description: base64encoded PDF
                         type: string
