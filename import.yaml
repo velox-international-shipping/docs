@@ -277,9 +277,10 @@ paths:
                     type: object
                     properties:
                       tracking_number:
-                        description: In demo mode backend tier returns UUID
+                        description: In demo mode returns UUID
                         type: string
-                        example: "1Z932R800394891329"
+                        pattern: '^\d{34}$'
+                        example: "4207047192748927005373000000007557"
                       label:
                         description: base64encoded PDF
                         type: string
@@ -354,6 +355,8 @@ paths:
       responses:
         200:
           description: The package is voided
+        400:
+          $ref: '#/components/responses/BadRequest'
         401:
           $ref: '#/components/responses/Unauthorized'
         404:
