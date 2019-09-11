@@ -2,6 +2,27 @@ openapi: "3.0.2"
 info:
   description: |
     Only english letters are allowed as values in `string` fields.
+    
+    Package tracking callbacks
+    ==========================
+    
+    There is a possibility to receive POST requests on client's endpoint with a package tracking event:
+    ```http
+    POST https://clients.endpoint/path HTTP/1.1
+    Content-Type: application/json
+    
+    {
+      "tracking_number": "4207047192748927005373000000007557",
+      "event_date": "2002-10-02T10:00:00-05:00",
+      "zip": "71203",
+      "state": "LA",
+      "city": "Monroe",
+      "address": "205 N Mcguire Ave",
+      "description": "delivered",
+    }
+    ```
+    Client's side should respond with `2xx` (success) status code if the message is processed correctly. Otherwise, Velox repeats the same request with gradually degrading frequency.
+    The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique.
   title: Velox Import API
   version: 0.9.0
 
@@ -277,9 +298,9 @@ paths:
                     type: object
                     properties:
                       tracking_number:
-                        description: In demo mode backend tier returns UUID
+                        description: In demo mode backend tier returns UUID. 34-digit tracking number is in production mode.
                         type: string
-                        example: "1Z932R800394891329"
+                        example: "4207047192748927005373000000007557"
                       label:
                         description: base64encoded PDF
                         type: string
@@ -295,7 +316,7 @@ paths:
         required: true
         schema:
           type: string
-          example: "1Z932R800394891329"
+          example: "4207047192748927005373000000007557"
       - name: format
         description: Specifies the response format. `json` is the default format.
         in: query
@@ -345,7 +366,7 @@ paths:
         required: true
         schema:
           type: string
-          example: "1Z932R800394891329"
+          example: "4207047192748927005373000000007557"
     delete:
       tags: ['Public']
       description: Voids a package. Method is not allowed if a package was manifested.
@@ -368,7 +389,7 @@ paths:
         required: true
         schema:
           type: string
-          example: "1Z932R800394891329"
+          example: "4207047192748927005373000000007557"
     get:
       tags: ['Public']
       description: Returns package tracking history
@@ -521,7 +542,7 @@ paths:
                   items:
                     description: USPS package tracking number
                     type: string
-                    example: "1Z932R800394891329"
+                    example: "4207047192748927005373000000007557"
       responses:
         201:
           description: Created
