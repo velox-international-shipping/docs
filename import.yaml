@@ -19,10 +19,12 @@ info:
       "city": "Monroe",
       "address": "205 N Mcguire Ave",
       "description": "delivered",
+      "weight_g": 760
     }
     ```
     Client's side should respond with `2xx` (success) status code if the message is processed correctly. Otherwise, Velox repeats the same request with gradually degrading frequency.
-    The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique.
+    The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique. 
+    Depending on the event `weight_g` might not be presented.
   title: Velox Import API
   version: 0.9.0
 
