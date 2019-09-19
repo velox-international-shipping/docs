@@ -10,6 +10,7 @@ info:
     ```http
     POST https://clients.endpoint/path HTTP/1.1
     Content-Type: application/json
+    Origin: https://import.veloxhub.us
     
     {
       "tracking_number": "4207047192748927005373000000007557",
