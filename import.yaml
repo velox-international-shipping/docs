@@ -2,16 +2,16 @@ openapi: "3.0.2"
 info:
   description: |
     Only english letters are allowed as values in `string` fields.
-    
+
     Package tracking callbacks
     ==========================
-    
+
     There is a possibility to receive POST requests on client's endpoint with a package tracking event:
     ```http
     POST https://clients.endpoint/path HTTP/1.1
     Content-Type: application/json
     Origin: https://import.veloxhub.us
-    
+
     {
       "tracking_number": "4207047192748927005373000000007557",
       "event_date": "2002-10-02T10:00:00-05:00",
@@ -20,12 +20,13 @@ info:
       "city": "Monroe",
       "address": "205 N Mcguire Ave",
       "description": "delivered",
+      "estimated_delivery_date": "2002-10-05",
       "weight_g": 760
     }
     ```
     Client's side should respond with `2xx` (success) status code if the message is processed correctly. Otherwise, Velox repeats the same request with gradually degrading frequency.
-    The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique. 
-    Depending on the event `weight_g` might not be presented.
+    The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique event. 
+    Depending on the event `weight_g` and `estimated_delivery_date` attributes might not be presented.
   title: Velox Import API
   version: 0.9.0
 
@@ -40,7 +41,7 @@ paths:
           type: string
           example: "81152"
     get:
-      tags: ['Public']
+      tags: ['All environments']
       description: Returns the city and state corresponding to the given ZIP code.
       security:
         - jwtAuth: []
@@ -77,7 +78,7 @@ paths:
           type: string
           example: "81152"
     get:
-      tags: ['Public']
+      tags: ['All environments']
       description: Returns shipping zones for supported airports
       security:
         - jwtAuth: []
@@ -126,10 +127,10 @@ paths:
         style: form
         explode: false
     post:
-      tags: ['Public']
+      tags: ['All environments']
       description: |
         Create a package and register it in USPS
-        
+
         HAWB
         ====
         We will reference the shipment internally using the last 11 digits in your HAWB, ignoring any letters. Data sent back to you will use your full HAWB.
@@ -331,7 +332,7 @@ paths:
             - binary
             - json
     get:
-      tags: ['Public']
+      tags: ['All environments']
       description: Returns package label. Available for a month after label creation.
       security:
         - jwtAuth: []
@@ -371,7 +372,7 @@ paths:
           type: string
           example: "4207047192748927005373000000007557"
     delete:
-      tags: ['Public']
+      tags: ['All environments']
       description: Voids a package. Method is not allowed if a package was manifested.
       security:
         - jwtAuth: []
@@ -383,8 +384,8 @@ paths:
         401:
           $ref: '#/components/responses/Unauthorized'
         404:
-          $ref: '#/components/responses/NotFound'  
-          
+          $ref: '#/components/responses/NotFound'
+
   /tracking/{tracking_number}:
     parameters:
       - name: tracking_number
@@ -394,7 +395,7 @@ paths:
           type: string
           example: "4207047192748927005373000000007557"
     get:
-      tags: ['Public']
+      tags: ['All environments']
       description: Returns package tracking history
       security:
         - jwtAuth: []
@@ -433,30 +434,30 @@ paths:
                               type: string
                               maxLength: 1000
                               example: "delivered"
-                              enum: 
-                              - accepted by usps
-                              - arrived at usps delivery unit
-                              - delivered
-                              - delivered to partner facility
-                              - delivery exception
-                              - departed usps
-                              - departing newgistics facility
-                              - electronic information sent to usps
-                              - enroute departed
-                              - forwarded
-                              - notice left
-                              - out for delivery
-                              - picked up by usps
-                              - processed by usps
-                              - refused
-                              - return to sender
-                              - shipped from client
-                              
-                              - pallet arrived at customs # extra descriptions added by Velox
-                              - pallet arrived at airport
-                              - pallet in process at customs
-                              - pallet left customs
-                              - pallet held at customs
+                              enum:
+                                - accepted by usps
+                                - arrived at usps delivery unit
+                                - delivered
+                                - delivered to partner facility
+                                - delivery exception
+                                - departed usps
+                                - departing newgistics facility
+                                - electronic information sent to usps
+                                - enroute departed
+                                - forwarded
+                                - notice left
+                                - out for delivery
+                                - picked up by usps
+                                - processed by usps
+                                - refused
+                                - return to sender
+                                - shipped from client
+
+                                - pallet arrived at customs # extra descriptions added by Velox
+                                - pallet arrived at airport
+                                - pallet in process at customs
+                                - pallet left customs
+                                - pallet held at customs
         401:
           $ref: '#/components/responses/Unauthorized'
         404:
@@ -464,13 +465,13 @@ paths:
 
   /manifests:
     post:
-      tags: ['Public']
+      tags: ['All environments']
       description: |
         Creates a manifest
-        
+
         Validating MAWBs
         ================
-        
+
         The IATA and US Customs rules for IATA MAWB's require that all MAWB's have a three digit Airline prefix and then eight digits. Those eight digits are a seven digit serial number and a mod 7 (unweighted) check digit.
         Using the MAWB 180-62148741 as the example, the airline prefix is 180, the seven digit serial number is 6214874, and the check digit is a 1.
         To confirm that 1 is the correct mod 7 check digit, you can determine the check digit two different ways. Method one:
@@ -563,6 +564,18 @@ paths:
                         format: uuid
         400:
           $ref: '#/components/responses/BadRequest'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /:
+    delete:
+      tags: ['Staging']
+      description: Deletes all objects created by the client
+      security:
+        - jwtAuth: []
+      responses:
+        202:
+          description: Accepted
         401:
           $ref: '#/components/responses/Unauthorized'
 
