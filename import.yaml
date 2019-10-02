@@ -19,14 +19,15 @@ info:
       "state": "LA",
       "city": "Monroe",
       "address": "205 N Mcguire Ave",
-      "description": "delivered",
+      "description": "Delivered",
+      "code": "DEL",
       "estimated_delivery_date": "2002-10-05",
       "weight_g": 760
     }
     ```
     Client's side should respond with `2xx` (success) status code if the message is processed correctly. Otherwise, Velox repeats the same request with gradually degrading frequency.
     The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique event. 
-    Depending on the event `weight_g` and `estimated_delivery_date` attributes might not be presented.
+    Depending on the event `weight_g` and `estimated_delivery_date` attributes might not be presented. List of all possible values of `description` and `code` fields is at the `/tracking/{tracking_number}` method documentation section.
   title: Velox Import API
   version: 0.9.0
 
@@ -266,15 +267,15 @@ paths:
                       properties:
                         name:
                           type: string
-                          maxLength: 30
+                          maxLength: 250
                           example: "Nikolai Gogol"
                         street:
                           type: string
-                          maxLength: 50
+                          maxLength: 500
                           example: "Marko Vovchok St, h. 18A"
                         city:
                           type: string
-                          maxLength: 25
+                          maxLength: 250
                           example: "Velyki Sorochyntsi"
                         zip:
                           type: string
@@ -396,7 +397,183 @@ paths:
           example: "4207047192748927005373000000007557"
     get:
       tags: ['All environments']
-      description: Returns package tracking history
+      description: |
+        Returns package tracking history
+        
+        | Code    | Description |
+        |---------|-----------------------------------|
+        | ADU      |   Arrived at USPS delivery unit   |
+        | ADU      |   Received at Opening Unit    |
+        | ADU      |   Arrived at USPS Facility    |
+        | ADU      |   Accepted at USPS Destination Sort Facility  |
+        | ANF      |   Arrived at Induction Facility   |
+        | AUSPS      |   DELIVERED TO POSTAL AGENT   |
+        | AUSPS      |   ARRIVED AT FACILITY |
+        | AUSPS      |   ARRIVAL AT POST OFFICE  |
+        | CC1      |   Client Custom Event 1   |
+        | CEA      |   Enroute Arrived |
+        | CED      |   Enroute Departed    |
+        | CED      |   Tendered to Returns Agent   |
+        | CED      |   Departed Shipping Partner Facility, USPS Awaiting Item  |
+        | CED      |   Departed Agent Facility |
+        | CEP      |   Picked Up by Shipping Partner, USPS Awaiting Item   |
+        | CEP      |   Arrived Shipping Partner Facility, USPS Awaiting Item   |
+        | CEP      |   Arrived Agent Facility  |
+        | CEP      |   Delivered to Agent  |
+        | CEP      |   Picked Up And Processed By Agent    |
+        | DEL      |   Delivered   |
+        | DEL      |   Available for Pickup    |
+        | DEL      |   Tendered to Military Agent  |
+        | DEL      |   Held at Post Office, At Customer    |
+        | DEL      |   Delivered to Agent  |
+        | DEL      |   Received by Agent   |
+        | DEL      |   Recipient Notified by Agent |
+        | DEL      |   Delivered to Recipient by Agent |
+        | DEL      |   Delivered to Agent by Merchant  |
+        | DEL      |   DELIVERED BY BROKER |
+        | DEL      |   DELIVERED (WITH SIGNATURE)  |
+        | DEL      |   DELIVERED DAMAGED   |
+        | DEL      |   ATTEMPTED DELIVERY ABROAD   |
+        | DEL      |   DELIVERED   |
+        | DEL      |   INTERNATIONAL DELIVERED WITH SIGNATURE  |
+        | DEL      |   PARTIAL DELIVERY    |
+        | DELEX      |   Unable to deliver item, problem with address    |
+        | DELEX      |   Arrived at USPS Facility    |
+        | DELEX      |   Seized by Law Enforcement. Please contact US Postal Inspection Service for further information. |
+        | DELEX      |   Visible Damage  |
+        | DELEX      |   In Transit  |
+        | DELEX      |   No Access   |
+        | DELEX      |   Dead Mail / Disposed by Post Office |
+        | DELEX      |   Dead Mail / Sent to Recovery Center |
+        | DELEX      |   Delivery Exception - Local Weather Delay    |
+        | DELEX      |   Undeliverable to Recipient by Agent |
+        | DELEX      |   Rescheduled to Next Delivery Day.   |
+        | DELEX      |   Delivery Exception, Animal Interference |
+        | DELEX      |   BAD ADDRESS |
+        | DELEX      |   BUMPED DELAY    |
+        | DELEX      |   CLOSED ON ARRIVAL   |
+        | DELEX      |   CLEARANCE DELAY |
+        | DELEX      |   CUSTOMER MOVED  |
+        | DELEX      |   DISPOSAL    |
+        | DELEX      |   Your Package Delivery is Delayed    |
+        | DELEX      |   HOLIDAY DELAY   |
+        | DELEX      |   R.T.S: IMPROPER DOCUMENTATION   |
+        | DELEX      |   R.T.S: ABANDONMENT  |
+        | DELEX      |   R.T.S: DUTY NONPAYMENT  |
+        | DELEX      |   MISSED DELIVERY CYCLE   |
+        | DELEX      |   MISCODE |
+        | DELEX      |   MISSORT |
+        | DELEX      |   NOT DELIVERED   |
+        | DELEX      |   NOT HOME    |
+        | DELEX      |   Processing Exception, Other Delay   |
+        | DELEX      |   REFUSED DELIVERY    |
+        | DELEX      |   REFUSED ENTRY BY CUSTOMS    |
+        | DELEX      |   SHIPMENT STOPPED    |
+        | DELEX      |   Processing Exception, Regional Transportation Delay |
+        | DELEX      |   Processing Exception, Regional Weather Delay    |
+        | DELU      |   Delivered to Partner Facility   |
+        | DNF      |   Departing Induction Facility    |
+        | DRC      |   Delivered to Return Center  |
+        | DUSPS      |   Picked Up by Shipping Agent |
+        | DUSPS      |   DEPARTED FACILITY   |
+        | DUSPS      |   Departed USPS Facility  |
+        | DUSPS      |   Departed Post Office    |
+        | FOR      |   Forwarded   |
+        | IPS      |   Inducted into Induction Network |
+        | LC      |   Label Created   |
+        | NL      |   Notice Left |
+        | NL      |   Business Closed |
+        | NL      |   Notice Left (Receptacle Blocked)    |
+        | NL      |   Notice Left (Receptacle Full/Item Oversized)    |
+        | NL      |   Notice Left (No Secure Location Available)  |
+        | NL      |   Notice Left (No Authorized Recipient Available) |
+        | NULL      |   Merchant Order Receipt Notification, USPS Awaiting Item |
+        | NULL      |   Return Receipt Associated   |
+        | NULL      |   Shipping Label Created, USPS Awaiting Item  |
+        | OFD      |   Out For Delivery    |
+        | OFD      |   OUT FOR DELIVERY    |
+        | OFD      |   Expected Delivery   |
+        | OFD      |   Out for Delivery    |
+        | OMC      |   Electronic Information Sent to USPS |
+        | OMR      |   Pre-Shipment Info Sent to USPS, USPS Awaiting Item  |
+        | PSC      |   Shipped from Client |
+        | PUU      |   USPS in possession of the item. |
+        | REF      |   Refused |
+        | RTS      |   Return to Sender    |
+        | RTS      |   Return to Sender due to Incorrect Address   |
+        | RTS      |   Return to Sender due to Insufficient Address    |
+        | RTS      |   Return to Sender because the addressee moved and left no forwarding address.    |
+        | RTS      |   Return to Sender because the forwarding order for this address is no longer valid.  |
+        | RTS      |   Return to Sender because the specified delivery address was unknown.    |
+        | RTS      |   Return to Sender because the address was vacant.    |
+        | RTS      |   Unclaimed. Return to Sender |
+        | RTS      |   Processed through USPS Facility |
+        | RTS      |   Customer Recall |
+        | RTS      |   FOREIGN RETURN TO SENDER    |
+        | RTS      |   RETURNED TO CONSIGNOR   |
+        | UPROC      |   In Transit  |
+        | UPROC      |   Available for Pickup    |
+        | UPROC      |   Tendered to Postal Service  |
+        | UPROC      |   FOREIGN ACCEPTANCE  |
+        | UPROC      |   Arrived USPS Sort Facility  |
+        | UPROC      |   HANDOFF TO INTERMEDIATE AIRLINE CARRIER |
+        | UPROC      |   RECEIVED FROM INTERMEDIATE AIRLINE CARRIER  |
+        | UPROC      |   INTERMEDIATE TRANSFER AIRPORT   |
+        | UPROC      |   ACCEPTED BY ORIGIN AIRLINE CARRIER  |
+        | UPROC      |   ARRIVED AT INTERNATIONAL SERVICE CENTER |
+        | UPROC      |   ARRIVED IN DESTINATION COUNTRY  |
+        | UPROC      |   ORIGIN AIRLINE CARRIER DEPARTED/UPLIFT  |
+        | UPROC      |   FOREIGN ARRIVAL AT OUTWARD OFFICE   |
+        | UPROC      |   Customs Clearance   |
+        | UPROC      |   INTO CUSTOMS    |
+        | UPROC      |   OUT OF CUSTOMS  |
+        | UPROC      |   Received by US Postal Service from US Customs   |
+        | UPROC      |   FOREIGN INTERNATIONAL DISPATCH  |
+        | UPROC      |   AWAITING CONSIGNEE COLLECTION   |
+        | UPROC      |   INBOUND INTO CUSTOMS    |
+        | UPROC      |   INBOUND OUT OF CUSTOMS  |
+        | UPROC      |   RELEASE FROM CUSTOMS/BOND   |
+        | UPROC      |   PROCESSED THROUGH OFFICE OF EXCHANGE    |
+        | UPROC      |   INTERNATIONAL DISPATCH READY    |
+        | UPROC      |   TRANSIT MAIL DISPATCH   |
+        | UPROC      |   CUSTOMS CLEARANCE   |
+        | UPROC      |   ENROUTE ARRIVAL |
+        | UPROC      |   ENROUTE DEPARTURE   |
+        | UPROC      |   Departed USPS Facility  |
+        | UPROC      |   CUSTOMS CLEARANCE PROCESSING COMPLETE   |
+        | UPROC      |   HELD FOR PAYMENT    |
+        | UPROC      |   RECEIPT INTO CUSTOMS/BOND   |
+        | UPROC      |   ARRIVAL AT TRANSIT OFFICE FROM EXCHANGE |
+        | UPROC      |   DEPART FROM TRANSIT OFFICE OF EXCHANGE  |
+        | UPROC      |   FORWARDING TO US CUSTOMS    |
+        | UPROC      |   CONTACT US CUSTOMS  |
+        | UPROC      |   FORWARDED BY USPS   |
+        | UPROC      |   PICKED UP AT CUSTOMS UNIT   |
+        | UPROC      |   Processing Exception    |
+        | UPROC      |   ORIGIN POST IS PREPARING SHIPMENT   |
+        | UPROC      |   In Transit to Destination   |
+        | UPROC      |   Accepted at USPS Origin Facility    |
+        | UPROC      |   Processed at Destination Facility   |
+        | UPROC      |   ON HOLD |
+        | UPROC      |   ORIGINATING PMPC SCAN   |
+        | UPROC      |   Sorting Complete    |
+        | UPROC      |   EPG ORIGIN POST IS PREPARING SHIPMENT   |
+        | UPROC      |   PROCESSED AT ORIGIN |
+        | UPROC      |   SHIPMENT PICK UP    |
+        | UPROC      |   SERVICE CHANGE  |
+        | UPROC      |   TRANSIT MAIL ARRIVAL    |
+        | UPROC      |   Shipment Received, Package Acceptance Pending   |
+        | UPROC      |   ONFORWARDED TO THIRD PARTY  |
+        | UPROC      |   TRANSFERRED THROUGH SERVICE CENTER  |
+        | UPROC      |   Accepted at USPS Facility   |
+        | UPROC      |   Reminder to Schedule Redelivery of your item    |
+        | UPROC      |   Redelivery Scheduled    |
+        | UPROC      |   WITH COURIER    |
+        | VLX       | pallet arrived at customs |
+        | VLX       | pallet arrived at airport |
+        | VLX       | pallet in process at customs  |
+        | VLX       | pallet left customs |
+        | VLX       | pallet held at customs  |
       security:
         - jwtAuth: []
       responses:
@@ -417,47 +594,56 @@ paths:
                         format: integer
                         minimum: 1
                         example: 370
+                      tracking_number:
+                        type: string
+                        example: "4207047192748927005373000000007557"
+                        maxLength: 60
                       events:
                         type: array
                         items:
                           type: object
+                          required: ['tracking_number', 'event_date', 'zip', 'state', 'city', 'address', 'location', 'description', 'code']
                           description: Each event represents barcode scan
                           properties:
                             event_date:
                               type: string
                               format: datetime # RFC3339
                               example: "2002-10-02T10:00:00-05:00"
+                            zip:
+                              type: string
+                              maxLength: 10
+                              example: "81152"
+                            state:
+                              type: string
+                              example: "LA"
+                              minLength: 2
+                              maxLength: 2
+                            city:
+                              type: string
+                              example: "SAN LUIS"
+                              maxLength: 35
+                            address:
+                              type: string
+                              example: "Salazar st 5"
                             location:
                               type: string
-                              example: "712019998, MONROE, LA, BREARD CARR-DELV"
+                              description: Concatenation of `zip`, `city`, `state` and `address` fields
+                              example: "81152, SAN LUIS, CO, Salazar st 5"
                             description:
                               type: string
                               maxLength: 1000
-                              example: "delivered"
-                              enum:
-                                - accepted by usps
-                                - arrived at usps delivery unit
-                                - delivered
-                                - delivered to partner facility
-                                - delivery exception
-                                - departed usps
-                                - departing newgistics facility
-                                - electronic information sent to usps
-                                - enroute departed
-                                - forwarded
-                                - notice left
-                                - out for delivery
-                                - picked up by usps
-                                - processed by usps
-                                - refused
-                                - return to sender
-                                - shipped from client
-
-                                - pallet arrived at customs # extra descriptions added by Velox
-                                - pallet arrived at airport
-                                - pallet in process at customs
-                                - pallet left customs
-                                - pallet held at customs
+                              description: List of all available descriptions is above
+                              example: "Delivered"
+                            code:
+                              type: string
+                              maxLength: 50
+                              description: List of all available codes is above
+                              example: "DEL"
+                            estimated_delivery_date:
+                              type: string
+                              format: datetime
+                              example: "2002-15-02"
+                            
         401:
           $ref: '#/components/responses/Unauthorized'
         404:
