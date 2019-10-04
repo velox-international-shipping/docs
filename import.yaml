@@ -692,7 +692,7 @@ paths:
                   description: "Use this field to uniquely identify this manifest"
                   type: string
                   minLength: 3
-                  maxLength: 15
+                  maxLength: 50
                   example: "US2019011303"
                 departure_date:
                   description: "The date in RFC3339 that the flight LEAVES the origin country; it can't be older than 7 days ago or newer than 4 days from now"
