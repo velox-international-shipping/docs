@@ -3,8 +3,10 @@ info:
   description: |
     Only english letters are allowed as values in `string` fields.
 
-    Package tracking callbacks
-    ==========================
+    ## Security
+    `import.veloxhub.us` domain is secured by Thawte® SSL123 certificate. You could get CA certificate file [here](https://veloxhub.us/ca.pem).
+
+    ## Package tracking callbacks
 
     There is a possibility to receive POST requests on client's endpoint with a package tracking event:
     ```http
