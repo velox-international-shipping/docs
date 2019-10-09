@@ -3,9 +3,6 @@ info:
   description: |
     Only english letters are allowed as values in `string` fields.
 
-    ## Security
-    `import.veloxhub.us` domain is secured by Thawte® SSL123 certificate. You could get CA certificate file [here](https://veloxhub.us/ca.pem).
-
     ## Package tracking callbacks
 
     There is a possibility to receive POST requests on client's endpoint with a package tracking event:
@@ -27,7 +24,7 @@ info:
       "weight_g": 760
     }
     ```
-    Client's side should respond with `2xx` (success) status code if the message is processed correctly. Otherwise, Velox repeats the same request with gradually degrading frequency.
+    Client's side should respond with `2xx` (success) status code if the message is processed correctly with non-empty body. Otherwise, Velox repeats the same request with gradually degrading frequency.
     The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique event. 
     Depending on the event `weight_g` and `estimated_delivery_date` attributes might not be presented. List of all possible values of `description` and `code` fields is at the `/tracking/{tracking_number}` method documentation section.
   title: Velox Import API
@@ -108,7 +105,7 @@ paths:
                             - "ORD"
                             - "LAX"
                         shipping_zone:
-                          type: integer
+                          type: string
                           example: 7
         400:
           description: Invalid ZIP format
