@@ -24,9 +24,9 @@ info:
       "weight_g": 760
     }
     ```
-    Client's side should respond with `2xx` (success) status code if the message is processed correctly with non-empty body. Otherwise, Velox repeats the same request with gradually degrading frequency.
+    Client's side should respond with `2xx` (success) status code with non-empty response body if the message is processed correctly. Otherwise, Velox repeats the same request with gradually degrading frequency.
     The same event might be sent more than once. Thus, it's highly recommended to treat an event with `tracking_number` and `event_date` pair as the unique event. 
-    Depending on the event `weight_g` and `estimated_delivery_date` attributes might not be presented. List of all possible values of `description` and `code` fields is at the `/tracking/{tracking_number}` method documentation section.
+    Depending on the event `weight_g` and `estimated_delivery_date` attributes might not be presented. List of all possible values of `description` and `code` fields is at the `/tracking/{tracking_number}` method documentation section. There are events which could containt only `tracking_number`, `event_date`, `description` and `code` fields.
   title: Velox Import API
   version: 0.9.0
 
@@ -601,7 +601,7 @@ paths:
                         type: array
                         items:
                           type: object
-                          required: ['tracking_number', 'event_date', 'zip', 'state', 'city', 'address', 'location', 'description', 'code']
+                          required: ['tracking_number', 'event_date', 'description', 'code']
                           description: Each event represents barcode scan
                           properties:
                             event_date:
