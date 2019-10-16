@@ -179,7 +179,7 @@ paths:
                     street:
                       type: string
                       maxLength: 70
-                      example: "2615 N CAUSEWAY BLVD E110"
+                      example: "2615 N CAUSEWAY BLVD E110; APT. 18"
                     city:
                       type: string
                       maxLength: 35
@@ -290,6 +290,16 @@ paths:
                           pattern: '^\d{,15}$'
                           maxLength: 15
                           example: "381000000000"
+                    ship_to:
+                      type: object
+                      required: ['street_address']
+                      properties:
+                        street_address:
+                          type: string
+                          maxLength: 500
+                          example: "2615 N CAUSEWAY BLVD E110"
+                          description: |
+                            The assigned numeric identifier which was given to a structure to show the address on the street that the building is located upon. A street address is typically painted on a building, or affixed using house numbers. Thus, must not contain apartment number and must be a substring of `ship_to.street`.
       responses:
         201:
           description: Created
