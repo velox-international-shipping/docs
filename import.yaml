@@ -18,6 +18,7 @@ info:
       "state": "LA",
       "city": "Monroe",
       "address": "205 N Mcguire Ave",
+      "location": "71203, Monroe, LA, 205 N Mcguire Ave",
       "description": "Delivered",
       "code": "DEL",
       "estimated_delivery_date": "2002-10-05",
@@ -149,6 +150,17 @@ paths:
               type: object
               required: ['ship_to', 'dimensions', 'customs']
               properties:
+                label:
+                  type: object
+                  properties:
+                    size:
+                      type: string
+                      description: Label size.
+                      default: "4X5"
+                      enum:
+                        - "4X4"
+                        - "4X5"
+                        - "4X6"
                 induct_at_airport_iata_code:
                   type: string
                   description: Specifies where the package will be expected and finally inducted
@@ -614,6 +626,9 @@ paths:
                           required: ['tracking_number', 'event_date', 'description', 'code']
                           description: Each event represents barcode scan
                           properties:
+                            tracking_number:
+                              type: string
+                              example: "4207047192748927005373000000007557"
                             event_date:
                               type: string
                               format: datetime # RFC3339
@@ -648,6 +663,9 @@ paths:
                               maxLength: 50
                               description: List of all available codes is above
                               example: "DEL"
+                            weight_g:
+                              type: integer
+                              example: 730
                             estimated_delivery_date:
                               type: string
                               format: datetime
